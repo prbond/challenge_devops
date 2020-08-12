@@ -33,7 +33,9 @@ ansible-galaxy install geerlingguy.docker
 ```
 
 ### 2.2 - Modifier le ficher hosts pour ajouter le hostname et/ou l'adresse ip de la machine ubuntu 20
+
 [ubuntu_20]
+
 #your_ubuntu_20_host ansible_host=X.X.X.X
 
 ### 2.3 - (Facultatif) Générer une nouvelle clé SSH
@@ -66,16 +68,23 @@ ansible-playbook -i hosts -u YOUR_USER_NAME -K playbook.yml -vv
 ### 2.7 - (Facultatif) Tester keycloak et les comptes utilisateurs
 
 http://your_ubuntu_20_host:8080/
+
 login : admin
+
 mot de passe : admin
 
 http://your_ubuntu_20_host:8080/auth/realms/example/account/
+
 login : jdoe
+
 mot de passe : jdoe
+
 role : visualisation du dashbord de kibana
 
 login : adminops
+
 mot de passe : adminops
+
 role : visualisation et management de kibana
 
 ### 2.8 - Se connecter une fois sur kibana http://your_ubuntu_20_host:5601 puis fermer la page
@@ -122,10 +131,15 @@ postgres        docker-entrypoint.sh postgres    Up      5432/tcp
 ```
 
 ### 2.16 - Se connecter à kibana http://your_ubuntu_20_host:5601
+
 login : jdoe
+
 mot de passe : jdoe
+
 role : visualisation du dashbord de kibana
 
 login : adminops
+
 mot de passe : adminops
+
 role : visualisation et management de kibana
