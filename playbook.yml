@@ -1,0 +1,41 @@
+- hosts: ubuntu_20
+  become: yes
+
+  vars:
+    server_ip: "{{ ansible_default_ipv4.address }}"
+    pip_install_packages:
+      - name: docker
+      - name: docker-compose
+
+  roles:
+   - geerlingguy.pip
+   - geerlingguy.docker
+
+  tasks:
+    - name: Add server_ip to example-realm.json
+      template:  
+        src: ./templates/example-realm.j2  
+        dest: "{{ ansible_user_dir }}/example-realm.json"
+      
+    - name: Add server_ip to kibana.yml
+      template:  
+        src: ./templates/kibana.j2 
+        dest: "{{ ansible_user_dir }}/kibana.yml"
+      
+    - name: Copy keycloak-kibana-3.3.0_7.5.0.zip file to user's home
+      copy:
+        src: ./files/keycloak-kibana-3.3.0_7.5.0.zip
+        dest: "{{ ansible_user_dir }}"
+
+    - name: Copy docker-compose.yaml file to user's home
+      copy:
+        src: ./files/docker-compose.yaml
+        dest: "{{ ansible_user_dir }}"
+          
+    - name: docker-compose up
+      docker_compose:
+        project_src: "{{ ansible_user_dir }}"
+      register: output
+
+    - debug:
+        var: output

@@ -1,0 +1,58 @@
+version: '2.1'
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.5.0
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+    restart: always
+    environment:
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+      discovery.type: single-node
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:7.5.0
+    container_name: kibana
+    ports:
+      - 5601:5601
+    restart: always
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/kibana.yml
+      - ./keycloak-kibana-3.3.0_7.5.0.zip:/usr/share/kibana/keycloak-kibana-3.3.0_7.5.0.zip
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  keycloak:
+    image: jboss/keycloak:9.0.2
+    container_name: keycloak
+    environment:
+      - DB_VENDOR=POSTGRES
+      - DB_ADDR=postgres
+      - DB_DATABASE=keycloak
+      - DB_USER=keycloak
+      - DB_SCHEMA=public
+      - DB_PASSWORD=password
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+    command:
+      - "--debug"
+      - "-b 0.0.0.0"
+      - "-Dkeycloak.import=/opt/jboss/keycloak/example-realm.json"
+    ports:
+      - 8080:8080
+    restart: always
+    depends_on:
+        - postgres
+    volumes:
+      - ./example-realm.json:/opt/jboss/keycloak/example-realm.json
